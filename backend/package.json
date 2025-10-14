@@ -1,0 +1,36 @@
+{
+  "name": "expense-tracker-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Smart Expense Tracker (Node + Express + Prisma + PostgreSQL)",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed": "node prisma/seed.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "keywords": [
+    "expense-tracker",
+    "express",
+    "prisma",
+    "postgresql",
+    "backend"
+  ],
+  "author": "Harrizon",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.17.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^6.17.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "nodemon": "^3.1.10"
+  }
+}
