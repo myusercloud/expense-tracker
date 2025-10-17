@@ -1,8 +1,21 @@
-import Navbar from '../components/Navbar.jsx';
-import Sidebar from '../components/Sidebar.jsx';
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar.jsx";
+import Sidebar from "../components/Sidebar.jsx";
+import API from "../api/api.js";
 
 export default function Profile() {
-  const user = JSON.parse(localStorage.getItem('user')) || {};
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    API.get("/users/me")
+      .then(res => setUser(res.data))
+      .catch(err => console.error("Failed to load profile:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Loading profile...</p>;
+  if (!user) return <p>No user data found.</p>;
 
   return (
     <div className="d-flex">
@@ -14,7 +27,7 @@ export default function Profile() {
           <div className="card p-4 mt-3">
             <p><strong>Name:</strong> {user.name}</p>
             <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Joined:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—'}</p>
+            <p><strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
       </div>

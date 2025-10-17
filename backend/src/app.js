@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import categoriesRoutes from "./routes/categoriesRoutes.js";
@@ -12,6 +13,7 @@ app.use(cors());//allows your frontend to make API calls to your backend even if
 //without it, the browser would block these requests for security reasons
 app.use(express.json());//parses incoming JSON request bodies and makes the data available under req.body
 // Define routes
+app.use("/api/analytics", analyticsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoriesRoutes);
