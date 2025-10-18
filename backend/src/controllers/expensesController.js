@@ -91,3 +91,70 @@ export const getSummary = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch summary. Please try again later." });
   }
 };
+
+
+
+export const getFilteredExpenses = async (req, res) => {
+  try {
+    const userId = req.user?.id ?? parseInt(req.query.userId); // support both auth and testing
+    const {
+      startDate,
+      endDate,
+      categoryId,
+      minAmount,
+      maxAmount,
+      page = 1,
+      limit = 50,
+      q, // search query for title
+      sort = "dateDesc" // or amountAsc, amountDesc
+    } = req.query;
+
+    const where = {
+      userId,
+      ...(categoryId && { categoryId: parseInt(categoryId) }),
+      ...(q && { title: { contains: q, mode: "insensitive" } }),
+      ...(minAmount && { amount: { gte: parseFloat(minAmount) } }),
+      ...(maxAmount && { amount: { lte: parseFloat(maxAmount) } }),
+      ...(startDate && endDate && {
+        date: {
+          gte: new Date(startDate),
+          lte: new Date(endDate)
+        }
+      })
+    };
+
+    const orderBy = (() => {
+      if (sort === "amountAsc") return { amount: "asc" };
+      if (sort === "amountDesc") return { amount: "desc" };
+      if (sort === "dateAsc") return { date: "asc" };
+      // default
+      return { date: "desc" };
+    })();
+
+    const offset = (Number(page) - 1) * Number(limit);
+
+    const [total, data] = await Promise.all([
+      prisma.expense.count({ where }),
+      prisma.expense.findMany({
+        where,
+        include: { category: true },
+        orderBy,
+        skip: offset,
+        take: Number(limit)
+      })
+    ]);
+
+    res.json({
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        pages: Math.ceil(total / Number(limit))
+      },
+      data
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching expenses", error: err.message });
+  }
+};
